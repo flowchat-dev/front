@@ -1,0 +1,20 @@
+@import url("http://fonts.googleapis.com/earlyaccess/notosanskr.css");
+body {
+  margin: 0px;
+}
+* {
+  font-family: "Noto Sans KR", sans-serif;
+}
+#root {
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+::-webkit-scrollbar-thumb {
+  width: 5px;
+  height: 5px;
+  background-color: rgba(0, 0, 0, 0.3);
+}

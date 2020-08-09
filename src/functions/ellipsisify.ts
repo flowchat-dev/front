@@ -1,0 +1,1 @@
+export default (source: string, length: number) =>  source.length < length ? source : source.substr(0, length - 3) + '...'
