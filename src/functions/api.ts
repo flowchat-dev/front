@@ -1,2 +1,3 @@
 import getServerUri from './getServerUri'
-export default (path: string, arg?: RequestInit) => fetch(`${getServerUri()}/${path}`, arg)
+export type TApiRequest =[ string, RequestInit?]
+export default (...[path, arg]: TApiRequest) => fetch(`${getServerUri()}/${path}`, arg)

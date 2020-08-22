@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import Sidebar from "./Sidebar";
-import { IChannel } from "./types/interface";
+import { IChannel } from "./types/commonType";
 
 import useChannels from "./hooks/useChannels";
 import ChatSide from "./ChatSide";
 import useChats from "./hooks/useChats";
+import useConsole from "./hooks/useConsole";
+import css from "@emotion/css";
 
 const ApplicationWrapper = styled.div`
   /* padding: 30px; */
@@ -16,9 +18,8 @@ const ApplicationWrapper = styled.div`
 `;
 
 const MinWidthedSidebar = styled(Sidebar)`
-  /* width: 300px; */
   padding: 18px 10px 0px 20px;
-  box-sizing: content-box;
+  box-sizing: border-box;
   overflow: scroll;
   height: 100vh;
 `;
@@ -33,7 +34,6 @@ const WidthedChat = styled(ChatSide)`
 function App() {
   const channels = useChannels();
   const [selectedChannel, selectChannel] = useState<string>();
-
   const chats = useChats(selectedChannel);
 
   const channelClickHandler = (channel: IChannel) => selectChannel(channel.id);
@@ -44,6 +44,13 @@ function App() {
           <MinWidthedSidebar
             channels={channels}
             onChannelClick={channelClickHandler}
+            css={
+              !chats &&
+              css`
+                border-top-right-radius: 24px;
+                border-bottom-right-radius: 24px;
+              `
+            }
           />
           {chats && selectedChannel && selectedChannel ? (
             <WidthedChat

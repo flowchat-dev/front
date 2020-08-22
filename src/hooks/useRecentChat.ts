@@ -1,21 +1,23 @@
 import useSocket from "./useSocket";
 import { useState, useEffect } from "react";
-import { IChat } from "../types/interface";
+import { IChat } from "../types/commonType";
 import chatToJsDate from "../functions/chatToJsDate";
+import useConsole from "./useConsole";
 
 const useRecentChat = () => {
   const _rawRecentMessage = useSocket<{
     type: string;
     content: IChat & {
-      time: number;
+      time: string;
     };
   }>("message")?.content;
   
-  const [recentMessage, setRecentMessage] = useState<IChat>();
+  const [recentMessages, setRecentMessages] = useState<IChat>();
+  useConsole('RECENTMESSAGE', recentMessages)
   useEffect(() => {
     if (!_rawRecentMessage) return;
-    setRecentMessage(chatToJsDate(_rawRecentMessage));
+    setRecentMessages(chatToJsDate(_rawRecentMessage));
   }, [_rawRecentMessage]);
-  return recentMessage
+  return recentMessages
 }
 export default useRecentChat

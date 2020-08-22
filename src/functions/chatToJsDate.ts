@@ -1,8 +1,8 @@
-import { IChat } from "../types/interface";
+import { IChat } from "../types/commonType";
 
 export default (chat: IChat & {
-  time: number
+  time: string
 }): IChat => ({
   ...chat,
-  time: new Date(chat?.time * 1000)
+  time: new Date(chat.time)
 })

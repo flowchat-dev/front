@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react"
-import { IChannel } from "../types/interface"
+import { useState, useEffect } from "react";
+import { IChannel } from "../types/commonType";
 
-import getChannels from '../functions/getChannels'
-import useRecentChat from "./useRecentChat"
+import getChannels from "../functions/getChannels";
+import useRecentChat from "./useRecentChat";
 const useChannels = () => {
-  const [channels, setChannels] = useState<IChannel[]>()
-  const recentChat = useRecentChat()
+  const [channels, setChannels] = useState<IChannel[]>();
+  const recentChat = useRecentChat();
 
   useEffect(() => {
     (async () => {
-      setChannels(await getChannels())
-    })()
-  }, [])
-  
+      setChannels(await getChannels());
+    })();
+  }, []);
+
   useEffect(() => {
     setChannels(
       (beforeChannels) =>
@@ -27,6 +27,13 @@ const useChannels = () => {
     );
   }, [recentChat]);
 
-  return channels
-}
-export default useChannels
+  useEffect(() => {
+    const channelIds = channels?.map((e) => e.id);
+    if (!channelIds) return;
+    if (recentChat?.channelId && channelIds.includes(recentChat?.channelId))
+      getChannels().then(setChannels);
+  }, [recentChat]);
+
+  return channels;
+};
+export default useChannels;

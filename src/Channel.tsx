@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import css from "@emotion/css";
-import { IChannel } from "./types/interface";
+import { IChannel } from "./types/commonType";
 import getFormattedTIme from "./functions/getFormattedTIme";
 import { HorizontalWrapper, ProfileImage } from "./atomics";
 import ellipsisify from "./functions/ellipsisify";
@@ -44,9 +44,9 @@ const ImageWrapper = styled.div`
   height: 78px;
   /* display: flex; */
 `;
-const OverlappedProfiles = ({ uri }: { uri: string[] }) => (
+const OverlappedProfiles = ({ url }: { url: string[] }) => (
   <>
-    {uri.map((e, i) => (
+    {url.map((e, i) => (
       <ProfileImage
         css={css`
           /* width */
@@ -68,7 +68,7 @@ export default ({
   <Wrapper {...props}>
     <ImageWrapper>
       {typeof profileImage === "object" ? (
-        <OverlappedProfiles uri={profileImage} />
+        <OverlappedProfiles url={profileImage} />
       ) : (
         <ProfileImage
           src={
@@ -79,15 +79,19 @@ export default ({
       )}
     </ImageWrapper>
     <ContentWrapper>
-      <HorizontalWrapper>
-        <Title>{name}</Title>
-        {+lastMessage.time ? (
-          <Time>{getFormattedTIme(lastMessage.time)}</Time>
-        ) : null}
-      </HorizontalWrapper>
-      {lastMessage.text ? (
-        <LastMessage>{ellipsisify(lastMessage.text, 40)}</LastMessage>
-      ) : null}
+      {lastMessage && (
+        <>
+          <HorizontalWrapper>
+            <Title>{name}</Title>
+            {lastMessage.time ? (
+              <Time>{getFormattedTIme(lastMessage.time)}</Time>
+            ) : null}
+          </HorizontalWrapper>
+          {lastMessage.text ? (
+            <LastMessage>{ellipsisify(lastMessage.text, 40)}</LastMessage>
+          ) : null}
+        </>
+      )}
     </ContentWrapper>
   </Wrapper>
 );

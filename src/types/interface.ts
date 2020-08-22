@@ -1,21 +1,10 @@
-export interface IChat {
-  text: string;
-  image?: string;
-  channelId: string;
-  senderId?: string;
-  time: Date;
-}
-export interface IChannel {
-  profileImage: string | string[],
-  name: string,
-  lastMessage: IChat;
-  id: string
-}
-export interface IUser {
-  name: string;
-  profileImage: string;
-  id: string;
-}
+import { IUser, IChannel, IChat } from "./commonType";
+
 export interface ILocalUser extends IUser {
   expired: number
+}
+export interface IChannelFromDB extends IChannel {
+  lastMessage?: IChat & {
+    time: number
+  }
 }

@@ -8,6 +8,5 @@ export default (userId: string, channelId: string) => {
   }
   
   const users = JSON.parse(rawUsers)
-  console.log(users)
   // console.log(users.filter(e => e.id === userId))
 }
