@@ -14,7 +14,7 @@ const setChatLogByChannel = (channelId: string, chatId: string) => {
       const parsed: string[] = JSON.parse(stored);
       localStorage.setItem(
         storageKey,
-        JSON.stringify([...parsed, chatId].slice(-100))
+        JSON.stringify([...parsed, chatId].slice(-80))
       );
     } catch (e) {
       console.log("Configuring new Channel..");
@@ -26,7 +26,7 @@ const setChatLogByChannel = (channelId: string, chatId: string) => {
   }
 };
 
-const get100AgoChatByChannel = (channelId: string) => {
+const get80AgoChatByChannel = (channelId: string) => {
   const storageKey = `CHATLOG/${channelId}`;
   const stored = localStorage.getItem(storageKey);
   if (stored)
@@ -47,7 +47,7 @@ const useChats = (channelId?: string) => {
   useEffect(() => {
     (async () => {
       if (!channelId) return;
-      const gettingFrom = get100AgoChatByChannel(channelId);
+      const gettingFrom = get80AgoChatByChannel(channelId);
 
       console.log(channelId, gettingFrom);
       if (!gettingFrom) setChats([]);
