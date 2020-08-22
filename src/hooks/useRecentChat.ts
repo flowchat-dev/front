@@ -11,13 +11,12 @@ const useRecentChat = () => {
       time: string;
     };
   }>("message")?.content;
-  
+
   const [recentMessages, setRecentMessages] = useState<IChat>();
-  useConsole('RECENTMESSAGE', recentMessages)
   useEffect(() => {
     if (!_rawRecentMessage) return;
     setRecentMessages(chatToJsDate(_rawRecentMessage));
   }, [_rawRecentMessage]);
-  return recentMessages
-}
-export default useRecentChat
+  return recentMessages;
+};
+export default useRecentChat;
