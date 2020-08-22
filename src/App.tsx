@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
-import Sidebar from "./Sidebar";
-import { IChannel } from "./types/commonType";
+import Sidebar from "./components/Sidebar";
+import ChatSide from "./components/ChatSide";
 
-import useChannels from "./hooks/useChannels";
-import ChatSide from "./ChatSide";
+import { IChannel } from "./types/commonType";
 import useChats from "./hooks/useChats";
+import useChannels from "./hooks/useChannels";
 import useConsole from "./hooks/useConsole";
 import css from "@emotion/css";
 

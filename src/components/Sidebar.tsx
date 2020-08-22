@@ -1,8 +1,8 @@
 import React from "react";
-import Channel from "./Channel";
-import { IChannel } from "./types/commonType";
 import styled from "@emotion/styled";
-import { HorizontalWrapper, Icon } from "./atomics";
+import Channel from "./Channel";
+import { IChannel } from "../types/commonType";
+import { HorizontalWrapper, Icon } from "../atomics";
 
 const HeaderWrapper = styled(HorizontalWrapper)`
   margin: 0px 0px 18px 0px;

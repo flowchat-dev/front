@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
-import { IChat, IUser } from "./types/commonType";
-import { ProfileImage, HorizontalWrapper } from "./atomics";
-import getFormattedTIme from "./functions/getFormattedTIme";
-import { ChatType } from "./types/includedInterface";
 import css from "@emotion/css";
+import { IChat, IUser } from "../types/commonType";
+import { ProfileImage, HorizontalWrapper } from "../atomics";
+import getFormattedTIme from "../functions/getFormattedTIme";
+import { ChatType } from "../types/includedInterface";
 
 export type TOnClickReply = (chatId: string) => any;
 interface IProps {

@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "@emotion/styled";
 import css from "@emotion/css";
-import { IChannel } from "./types/commonType";
-import getFormattedTIme from "./functions/getFormattedTIme";
-import { HorizontalWrapper, ProfileImage } from "./atomics";
-import ellipsisify from "./functions/ellipsisify";
+import { IChannel } from "../types/commonType";
+import getFormattedTIme from "../functions/getFormattedTIme";
+import { HorizontalWrapper, ProfileImage } from "../atomics";
+import ellipsisify from "../functions/ellipsisify";
 
 const Title = styled.p`
   font-size: 15px;
