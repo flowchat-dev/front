@@ -3,19 +3,31 @@ import { IChat, ISendingChat } from "../types/commonType";
 import getMyInfo from "./getMyInfo";
 import api from "./api";
 
-const sendMessage = async (channelId: string, message: string) => {
+const sendMessage = async (
+  channelId: string,
+  message: string,
+  attach?: {
+    file?: FileList;
+  }
+) => {
   const { id } = (await getMyInfo()) || { id: undefined };
   console.log(id);
   if (!id) return;
   console.log({ text: message, channelId });
+  const body = new FormData();
+
+  if (attach?.file)
+    new Array(attach.file.length)
+      .fill(undefined)
+      .forEach((e, i) => body.append("attachment", attach.file?.item(i)));
+
+  Object.entries({
+    text: message,
+    channelId,
+  }).forEach((e) => body.append(...e));
+
   api("chat/send", {
-    body: JSON.stringify({
-      text: message,
-      channelId,
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
+    body,
     method: "POST",
   });
 };

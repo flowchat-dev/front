@@ -2,22 +2,43 @@ import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { HorizontalWrapper } from "../atomics";
 import { ReactComponent as SendSvg } from "../assets/send-24px.svg";
+import { ReactComponent as SendFileSvg } from "../assets/file.svg";
 import sendMessage from "../functions/sendMessage";
 import css from "@emotion/css";
+import useInput from "../hooks/useInput";
 
 const ChatInput = ({ channelId }: { channelId: string }) => {
+  const [focused, setFocused] = useState(false);
+  const focusHandler = () => setFocused(true);
+  const file = document.createElement("input");
+  const [fileAttach, setFileAttach] = useState<FileList>();
+  const fileChangeListener = (files: FileList) => {
+    setFileAttach(files);
+  };
   const inputHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== "Enter") return;
     const { currentTarget } = e;
     const message = currentTarget.value;
     currentTarget.value = "";
-    sendMessage(channelId, message);
+    sendMessage(channelId, message, {
+      file: fileAttach,
+    });
   };
-  const [focused, setFocused] = useState(false);
-  const focusHandler = () => setFocused(true);
+
+  useEffect(() => {
+    file.type = "file";
+    file.multiple = true;
+    file.addEventListener("change", ({ target }) => {
+      if (file.files) fileChangeListener(file.files);
+    });
+  }, [file]);
+
   return (
     <InputWrapper>
       <Input onFocus={focusHandler} onKeyDown={inputHandler} />
+      <CircleButton visible={true}>
+        <SendFileSvg onClick={() => file.click()} />
+      </CircleButton>
       <CircleButton visible={focused}>
         <SendSvg />
       </CircleButton>
@@ -60,6 +81,9 @@ const CircleButton = styled.div<{ visible: boolean }>`
   text-align: center;
   line-height: 48px;
   transition: 300ms cubic-bezier(0, 0.91, 0, 0.97);
+  & + & {
+    margin-left: 0px;
+  }
   ${({ visible }) =>
     visible ||
     css`
