@@ -5,15 +5,20 @@ import { ReactComponent as SendSvg } from "../assets/send-24px.svg";
 import { ReactComponent as SendFileSvg } from "../assets/file.svg";
 import sendMessage from "../functions/sendMessage";
 import css from "@emotion/css";
-import useInput from "../hooks/useInput";
+import FileViewer from "./FileViewer";
 
 const ChatInput = ({ channelId }: { channelId: string }) => {
   const [focused, setFocused] = useState(false);
   const focusHandler = () => setFocused(true);
   const file = document.createElement("input");
   const [fileAttach, setFileAttach] = useState<FileList>();
+  const [removedFiles, setRemovedFiles] = useState<string[]>([]);
+  const [fileViewerOpened, setFileViewerOpened] = useState(false);
   const fileChangeListener = (files: FileList) => {
+    if (!files) return;
+    setRemovedFiles([]);
     setFileAttach(files);
+    if (!fileViewerOpened) setFileViewerOpened(true);
   };
   const inputHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== "Enter") return;
@@ -22,7 +27,18 @@ const ChatInput = ({ channelId }: { channelId: string }) => {
     currentTarget.value = "";
     sendMessage(channelId, message, {
       file: fileAttach,
+      removedFiles,
     });
+
+    setFileViewerOpened(false);
+    setTimeout(() => {
+      setRemovedFiles([]);
+      setFileAttach(undefined);
+    }, 300);
+  };
+
+  const clickRemoveHandler = (filename: string) => {
+    setRemovedFiles((e) => [...e, filename]);
   };
 
   useEffect(() => {
@@ -35,6 +51,14 @@ const ChatInput = ({ channelId }: { channelId: string }) => {
 
   return (
     <InputWrapper>
+      {fileAttach && (
+        <FileViewer
+          fileViewerOpened={fileViewerOpened}
+          onClickRemove={clickRemoveHandler}
+          files={fileAttach}
+          removeFiles={removedFiles}
+        />
+      )}
       <Input onFocus={focusHandler} onKeyDown={inputHandler} />
       <CircleButton visible={true}>
         <SendFileSvg onClick={() => file.click()} />
