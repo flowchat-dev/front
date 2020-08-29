@@ -8,6 +8,7 @@ const sendMessage = async (
   message: string,
   attach?: {
     file?: FileList;
+    removedFiles: string[];
   }
 ) => {
   const { id } = (await getMyInfo()) || { id: undefined };
@@ -19,7 +20,8 @@ const sendMessage = async (
   if (attach?.file)
     new Array(attach.file.length).fill(undefined).forEach((e, i) => {
       const item = attach.file?.item(i);
-      if (item) body.append("attachment", item);
+      if (item && !attach.removedFiles.includes(item.name))
+        body.append("attachment", item);
     });
 
   Object.entries({
