@@ -17,9 +17,10 @@ const sendMessage = async (
   const body = new FormData();
 
   if (attach?.file)
-    new Array(attach.file.length)
-      .fill(undefined)
-      .forEach((e, i) => body.append("attachment", attach.file?.item(i)));
+    new Array(attach.file.length).fill(undefined).forEach((e, i) => {
+      const item = attach.file?.item(i);
+      if (item) body.append("attachment", item);
+    });
 
   Object.entries({
     text: message,
