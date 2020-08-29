@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 import styled from "@emotion/styled";
-import useConsole from "../hooks/useConsole";
-import css from "@emotion/css";
+
 const getFormattedSize = (bytes: number) => {
   let modifiable = bytes;
   let suffixCounter = 0;
@@ -14,9 +13,6 @@ const getFormattedSize = (bytes: number) => {
 interface IProps {
   files: FileList;
 }
-const Item = () => {
-  return <ItemWrapper></ItemWrapper>;
-};
 interface IImageItemProps {
   image: string;
 }
@@ -39,59 +35,8 @@ const FileItem: React.FC<IFileItemProps> = ({ name, sizeString }) => {
   );
 };
 const ImageItem: React.FC<IImageItemProps> = ({ image }) => {
-  const [isDragging, setDraggingState] = useState(false);
-  const [topPosition, setTopPoition] = useState<number>();
-  const [mouseOrigin, setMouseOrigin] = useState<number>();
-  const dragEnd = useCallback(() => {
-    setDraggingState(() => false);
-    setMouseOrigin(() => 0);
-    console.log("eneded", mouseOrigin);
-  }, [mouseOrigin]);
-  const dragStarted = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.persist();
-    console.log("started", e.clientY);
-    setMouseOrigin(() => e.clientY);
-    setTopPoition(() => e.clientY);
-    setDraggingState(() => true);
-  }, []);
-  const mouseMoveHandler = (ev: MouseEvent) => {
-    setTopPoition(() => ev.clientY);
-  };
-  useConsole("MOUSEY", [mouseOrigin, topPosition, mouseOrigin! - topPosition!]);
-  useEffect(() => {
-    if (!isDragging) return;
-    window.addEventListener("dragover", mouseMoveHandler);
-    window.addEventListener("dragend", dragEnd);
-    window.addEventListener("mouseup", dragEnd);
-    console.log("Event attached!");
-    return () => {
-      window.removeEventListener("mouseup", dragEnd);
-      window.removeEventListener("dragend", dragEnd);
-      window.removeEventListener("dragover", mouseMoveHandler);
-    };
-  }, [isDragging, dragEnd]);
   return (
-    <ItemWrapper
-      onMouseDown={dragStarted}
-      // onMouseMove={console.log}
-      {...{
-        css:
-          isDragging && mouseOrigin
-            ? css`
-                position: relative;
-                bottom: ${mouseOrigin! - topPosition! + 12}px;
-                &:not(& + &) {
-                  margin-bottom: 12px;
-                }
-                & + & {
-                  margin-top: 12px;
-                }
-              `
-            : css`
-                position: static;
-              `,
-      }}
-    >
+    <ItemWrapper>
       <ImageIconWrapper>
         <Remove />
       </ImageIconWrapper>
@@ -100,7 +45,6 @@ const ImageItem: React.FC<IImageItemProps> = ({ image }) => {
   );
 };
 const FileViewer: React.FC<IProps> = ({ files }) => {
-  useConsole("FILES", Array.from(files));
   return (
     <Wrapper>
       {Array.from(files).map((e) => {
