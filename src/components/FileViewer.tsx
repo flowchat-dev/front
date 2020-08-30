@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import css from "@emotion/css";
+import { AVAILABLE_FILE_FORMAT } from "../types/constants";
 
 const getFormattedSize = (bytes: number) => {
   let modifiable = bytes;
@@ -91,7 +92,7 @@ const FileViewer: React.FC<IProps> = ({
                 disappear={!fileViewerOpened}
               />
             );
-          else if (["pdf"].includes(e.type.split("/")[1]))
+          else if (e.name.substr(e.name.lastIndexOf(".") + 1))
             return (
               <FileItem
                 remove={() => onClickRemove(e.name)}
