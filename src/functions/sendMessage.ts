@@ -1,5 +1,3 @@
-import { socket } from "../storage/socket";
-import { IChat, ISendingChat } from "../types/commonType";
 import getMyInfo from "./getMyInfo";
 import api from "./api";
 
@@ -24,10 +22,8 @@ const sendMessage = async (
         body.append("attachment", item);
     });
 
-  Object.entries({
-    text: message,
-    channelId,
-  }).forEach((e) => body.append(...e));
+  if (message) body.append("text", message);
+  body.append("channelId", channelId);
 
   api("chat/send", {
     body,
