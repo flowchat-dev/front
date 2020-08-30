@@ -17,7 +17,19 @@ const useInput = <T = string>(
     if (inputValidation && inputValidation(willSetValue))
       setValue(willSetValue);
   };
-  return { value, onChange };
+  return [{ value, onChange }, (d) => setValue(d)] as [
+    {
+      value: T;
+      onChange: ({
+        target: { value: willSetValue },
+      }: {
+        target: {
+          value: T;
+        };
+      }) => void;
+    },
+    (d: any) => void
+  ];
 };
 
 export default useInput;
