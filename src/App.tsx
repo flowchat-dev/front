@@ -22,6 +22,7 @@ const MinWidthedSidebar = styled(Sidebar)`
   box-sizing: border-box;
   overflow: scroll;
   height: 100vh;
+  min-width: 435px;
 `;
 
 const WidthedChat = styled(ChatSide)`
