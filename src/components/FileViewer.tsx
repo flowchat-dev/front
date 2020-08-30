@@ -21,6 +21,7 @@ interface IProps {
 interface IItem {
   remove: (event?: React.MouseEvent<HTMLDivElement, MouseEvent>) => any;
   disappear: boolean;
+  name: string;
 }
 interface IImageItemProps extends IItem {
   image: string;
@@ -53,25 +54,7 @@ const AttachItem: React.FC<{
   );
 };
 
-const FileItem: React.FC<IFileItemProps> = ({
-  name,
-  sizeString,
-  remove,
-  disappear,
-}) => {
-  const isSupported = AVAILABLE_FILE_FORMAT.includes(
-    name.substr(name.lastIndexOf(".") + 1)
-  );
-  if (isSupported === null) return <></>;
-  if (isSupported)
-    return (
-      <AttachItem onClick={remove} disappear={disappear}>
-        <FileWrapper>
-          <FileName>{name}</FileName>
-          <FileSize>{sizeString}</FileSize>
-        </FileWrapper>
-      </AttachItem>
-    );
+const UnsuuportedItem: React.FC<IItem> = ({ remove, name }) => {
   setTimeout(() => remove(), 2300);
   return (
     <AttachItem
@@ -83,6 +66,22 @@ const FileItem: React.FC<IFileItemProps> = ({
       <FileWrapper>
         <FileName>지원하지 않는 형식</FileName>
         <FileSize>{name}</FileSize>
+      </FileWrapper>
+    </AttachItem>
+  );
+};
+
+const FileItem: React.FC<IFileItemProps> = ({
+  name,
+  sizeString,
+  remove,
+  disappear,
+}) => {
+  return (
+    <AttachItem onClick={remove} disappear={disappear}>
+      <FileWrapper>
+        <FileName>{name}</FileName>
+        <FileSize>{sizeString}</FileSize>
       </FileWrapper>
     </AttachItem>
   );
@@ -111,9 +110,22 @@ const FileViewer: React.FC<IProps> = ({
       {Array.from(files)
         .filter((e) => !removeFiles?.includes(e.name))
         .map((e, index) => {
+          if (
+            !AVAILABLE_FILE_FORMAT.includes(
+              e.name.substr(e.name.lastIndexOf(".") + 1)
+            )
+          )
+            return (
+              <UnsuuportedItem
+                disappear={false}
+                name={e.name}
+                remove={() => onClickRemove(e.name)}
+              />
+            );
           if (e.type.includes("image"))
             return (
               <ImageItem
+                name={e.name}
                 remove={() => onClickRemove(e.name)}
                 image={window.URL.createObjectURL(e)}
                 disappear={!fileViewerOpened}
@@ -238,7 +250,7 @@ const FileSize = styled.p`
   opacity: 0.7;
 `;
 const FileWrapper = styled.div`
-  padding: 6px 6px 6px 12px;
+  padding: 6px 12px;
   transition: 300ms cubic-bezier(0, 0.91, 0, 0.97);
 `;
 const unsupportedDisappearStyle = css`
