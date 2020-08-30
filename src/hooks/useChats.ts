@@ -2,65 +2,17 @@ import { useState, useEffect } from "react";
 import { IChat } from "../types/commonType";
 import api from "../functions/api";
 import useRecentChat from "./useRecentChat";
-import useStorage from "./useStorage";
-import useConsole from "./useConsole";
-
-const setChatLogByChannel = (channelId: string, chatId: string) => {
-  console.log("Set!", channelId, chatId);
-  const storageKey = `CHATLOG/${channelId}`;
-  const stored = localStorage.getItem(storageKey);
-  if (stored)
-    try {
-      const parsed: string[] = JSON.parse(stored);
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify([...parsed, chatId].slice(-80))
-      );
-    } catch (e) {
-      console.log("Configuring new Channel..");
-      localStorage.setItem(storageKey, `["${chatId}"]`);
-    }
-  else {
-    console.log("Configuring new Channel..");
-    localStorage.setItem(storageKey, `["${chatId}"]`);
-  }
-};
-
-const get80AgoChatByChannel = (channelId: string) => {
-  const storageKey = `CHATLOG/${channelId}`;
-  const stored = localStorage.getItem(storageKey);
-  if (stored)
-    try {
-      const parsed: string[] = JSON.parse(stored);
-      return parsed[0];
-    } catch {
-      return "NO DTA";
-    }
-};
 
 const useChats = (channelId?: string) => {
   const [chats, setChats] = useState<IChat[]>();
   const recentChat = useRecentChat();
-  // const [thisChannelLastChatId, setThisChannelLastChatId] = useStorage(
-  //   `CHATLOG/${channelId}`
-  // );
+
   useEffect(() => {
     (async () => {
       if (!channelId) return;
-      const gettingFrom = get80AgoChatByChannel(channelId);
-
-      console.log(channelId, gettingFrom);
-      if (!gettingFrom) setChats([]);
-      else
-        setChats(await (await api(`chat/${channelId}/${gettingFrom}`)).json());
+      setChats(await (await api(`chat/${channelId}`)).json());
     })();
   }, [channelId]);
-
-  useEffect(() => {
-    console.log(recentChat);
-    if (recentChat?.channelId && recentChat?.chatId)
-      setChatLogByChannel(recentChat?.channelId, recentChat?.chatId);
-  }, [recentChat]);
 
   useEffect(() => {
     if (channelId && recentChat?.channelId && chats && chats[0])
