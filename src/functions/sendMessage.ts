@@ -16,7 +16,7 @@ const sendMessage = async (
   const body = new FormData();
 
   if (attach?.file)
-    new Array(attach.file.length).fill(undefined).forEach((e, i) => {
+    new Array(attach.file.length).fill(null).forEach((_, i) => {
       const item = attach.file?.item(i);
       if (item && attach.removedFiles?.includes(item.name))
         body.append("attachment", item);
