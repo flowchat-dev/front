@@ -1,5 +1,3 @@
-import { socket } from "../storage/socket";
-import { IChat, ISendingChat } from "../types/commonType";
 import getMyInfo from "./getMyInfo";
 import api from "./api";
 
@@ -8,6 +6,7 @@ const sendMessage = async (
   message: string,
   attach?: {
     file?: FileList;
+    removedFiles?: string[];
   }
 ) => {
   const { id } = (await getMyInfo()) || { id: undefined };
@@ -17,14 +16,14 @@ const sendMessage = async (
   const body = new FormData();
 
   if (attach?.file)
-    new Array(attach.file.length)
-      .fill(undefined)
-      .forEach((e, i) => body.append("attachment", attach.file?.item(i)));
+    new Array(attach.file.length).fill(null).forEach((_, i) => {
+      const item = attach.file?.item(i);
+      if (item && attach.removedFiles?.includes(item.name))
+        body.append("attachment", item);
+    });
 
-  Object.entries({
-    text: message,
-    channelId,
-  }).forEach((e) => body.append(...e));
+  if (message) body.append("text", message);
+  body.append("channelId", channelId);
 
   api("chat/send", {
     body,

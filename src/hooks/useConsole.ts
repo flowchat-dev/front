@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const WHITELIST = ["HIGHLIGHED"];
+const WHITELIST = ["DISAPPEAR?"];
 
 const useConsole = (name: string, value: any) => {
   useEffect(() => {
