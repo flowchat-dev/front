@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import css from "@emotion/css";
 import { AVAILABLE_FILE_FORMAT } from "../types/constants";
-
 const getFormattedSize = (bytes: number) => {
   let modifiable = bytes;
   let suffixCounter = 0;
@@ -20,7 +19,7 @@ interface IProps {
 }
 
 interface IItem {
-  remove: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => any;
+  remove: (event?: React.MouseEvent<HTMLDivElement, MouseEvent>) => any;
   disappear: boolean;
 }
 interface IImageItemProps extends IItem {
@@ -35,18 +34,21 @@ interface IFileItemProps extends IItem {
 const AttachItem: React.FC<{
   onClick: (e?: any) => any;
   disappear: boolean;
-}> = ({ children, onClick, disappear }) => {
+  noCloseButton?: boolean;
+}> = ({ children, onClick, disappear, noCloseButton, ...props }) => {
   const [disappearing, setDisappearing] = useState<boolean>(false);
   const clickHanlder = () => {
     setDisappearing(true);
     onClick && setTimeout(onClick, 300);
   };
   return (
-    <ItemWrapper disappearing={(disappearing || disappear) && 300}>
+    <ItemWrapper disappearing={(disappearing || disappear) && 300} {...props}>
       {children}
-      <ImageIconWrapper onClick={clickHanlder}>
-        <Remove />
-      </ImageIconWrapper>
+      {noCloseButton || (
+        <IconWrapper onClick={clickHanlder}>
+          <Remove />
+        </IconWrapper>
+      )}
     </ItemWrapper>
   );
 };
@@ -57,18 +59,43 @@ const FileItem: React.FC<IFileItemProps> = ({
   remove,
   disappear,
 }) => {
+  const isSupported = AVAILABLE_FILE_FORMAT.includes(
+    name.substr(name.lastIndexOf(".") + 1)
+  );
+  if (isSupported === null) return <></>;
+  if (isSupported)
+    return (
+      <AttachItem onClick={remove} disappear={disappear}>
+        <FileWrapper>
+          <FileName>{name}</FileName>
+          <FileSize>{sizeString}</FileSize>
+        </FileWrapper>
+      </AttachItem>
+    );
+  setTimeout(() => remove(), 2300);
   return (
-    <AttachItem onClick={remove} disappear={disappear}>
+    <AttachItem
+      disappear={false}
+      onClick={remove}
+      css={unsupportedDisappearStyle}
+      noCloseButton
+    >
       <FileWrapper>
-        <FileName>{name}</FileName>
-        <FileSize>{sizeString}</FileSize>
+        <FileName>지원하지 않는 형식</FileName>
+        <FileSize>{name}</FileSize>
       </FileWrapper>
     </AttachItem>
   );
 };
 const ImageItem: React.FC<IImageItemProps> = ({ image, remove, disappear }) => {
   return (
-    <AttachItem onClick={remove} disappear={disappear}>
+    <AttachItem
+      onClick={remove}
+      disappear={disappear}
+      css={css`
+        width: 180px;
+      `}
+    >
       <Image src={image} />
     </AttachItem>
   );
@@ -92,7 +119,7 @@ const FileViewer: React.FC<IProps> = ({
                 disappear={!fileViewerOpened}
               />
             );
-          else if (e.name.substr(e.name.lastIndexOf(".") + 1))
+          else
             return (
               <FileItem
                 remove={() => onClickRemove(e.name)}
@@ -113,13 +140,28 @@ const Wrapper = styled.div`
   transition: 1s;
   min-width: 180px;
 `;
-
+const disappearAnimation = css`
+  @keyframes disappear {
+    from {
+      opacity: 1;
+      transform: scale(1);
+      max-height: 400px;
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.7);
+      max-height: 0px;
+      margin-top: 0px;
+    }
+  }
+`;
 const ItemWrapper = styled.div<{ disappearing: false | number }>`
   border-radius: 12px;
-  overflow: hidden;
   background-color: white;
   animation: appear 500ms cubic-bezier(0, 0.91, 0, 0.97);
-  margin-top: 12px;
+  transition: 300ms cubic-bezier(0, 0.91, 0, 0.97);
+  margin: 12px 0px 0px auto;
+  ${disappearAnimation}
   ${({ disappearing }) =>
     disappearing &&
     css`
@@ -135,27 +177,15 @@ const ItemWrapper = styled.div<{ disappearing: false | number }>`
       opacity: 1;
     }
   }
-  @keyframes disappear {
-    from {
-      opacity: 1;
-      transform: scale(1);
-      max-height: 400px;
-    }
-    to {
-      opacity: 0;
-      transform: scale(0.7);
-      max-height: 0px;
-      margin-top: 0px;
-    }
-  }
 `;
 const Image = styled.img`
-  width: 180px;
   border-radius: 12px;
   vertical-align: middle;
   user-select: none;
+  width: 100%;
+  transition: 300ms cubic-bezier(0, 0.91, 0, 0.97);
 `;
-const ImageIconWrapper = styled.div`
+const IconWrapper = styled.div`
   position: relative;
   margin: -24px 0px 0px auto;
   background-color: white;
@@ -209,5 +239,31 @@ const FileSize = styled.p`
 `;
 const FileWrapper = styled.div`
   padding: 6px 6px 6px 12px;
+  transition: 300ms cubic-bezier(0, 0.91, 0, 0.97);
+`;
+const unsupportedDisappearStyle = css`
+  ${disappearAnimation}
+  animation:  gradient 2s linear,
+              disappear 300ms cubic-bezier(0, 0.91, 0, 0.97) 2s;
+  background: linear-gradient(
+    90deg,
+    #ff9292 0%,
+    #ff9292 50%,
+    #ffcccc 50%,
+    #ffcccc 100%
+  );
+  background-size: 200% 100%;
+  font-weight: 900;
+  font-size: 15px;
+  opacity: 0.8;
+  color: white;
+  @keyframes gradient {
+    from {
+      background-position-x: 100%;
+    }
+    to {
+      background-position-x: 1%;
+    }
+  }
 `;
 export default FileViewer;
