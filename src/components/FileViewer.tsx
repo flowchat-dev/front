@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import css from "@emotion/css";
 import { AVAILABLE_FILE_FORMAT } from "../types/constants";
+const unitSuffix = ["B", "KB", "MB", "GB"];
 const getFormattedSize = (bytes: number) => {
   let modifiable = bytes;
   let suffixCounter = 0;
@@ -9,7 +10,7 @@ const getFormattedSize = (bytes: number) => {
     modifiable /= 1024;
     suffixCounter++;
   }
-  return `${modifiable.toFixed(2)}${["B", "KB", "MB", "GB"][suffixCounter]}`;
+  return `${modifiable.toFixed(2)}${unitSuffix[suffixCounter]}`;
 };
 interface IProps {
   files: FileList;
