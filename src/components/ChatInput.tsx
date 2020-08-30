@@ -12,21 +12,27 @@ const ChatInput = ({ channelId }: { channelId: string }) => {
   const [focused, setFocused] = useState(false);
   const focusHandler = () => setFocused(true);
   const file = document.createElement("input");
-  const [fileAttach, setFileAttach] = useState<FileList>();
+  const [fileAttach, setFileAttach] = useState<FileList | null>(null);
   const [removedFiles, setRemovedFiles] = useState<string[]>([]);
   const [fileViewerOpened, setFileViewerOpened] = useState(false);
   const [messageInput, setMessage] = useInput();
   const send = (message: string = messageInput.value) => {
     setMessage("");
-    sendMessage(channelId, message, {
-      file: fileAttach,
-      removedFiles,
-    });
+    sendMessage(
+      channelId,
+      message,
+      fileAttach
+        ? {
+            file: fileAttach,
+            removedFiles,
+          }
+        : {}
+    );
 
     setFileViewerOpened(false);
     setTimeout(() => {
       setRemovedFiles([]);
-      setFileAttach(undefined);
+      setFileAttach(null);
     }, 300);
   };
   const fileChangeListener = useCallback(
