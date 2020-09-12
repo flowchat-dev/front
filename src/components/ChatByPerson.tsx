@@ -7,30 +7,21 @@ import getFormattedTIme from "../functions/getFormattedTIme";
 import { ChatType } from "../types/includedInterface";
 
 export type TOnClickReply = (chatId: string) => any;
-interface IProps {
+export interface IChatByPersonProps {
   sender: IUser;
   chats: IChat[];
-  onClickReply: TOnClickReply;
-  isHighlighted: boolean;
 }
 
 const Name = styled.p`
   margin: 0px;
-  /* display: inline-block; */
   font-size: 15px;
   opacity: 0.8;
   font-weight: 500;
   color: white;
-  /* position: sticky;
-  top: 4px; */
 `;
-const ChatByPersonWrapper = styled.div`
-  /* display: flex; */
-`;
+const ChatByPersonWrapper = styled.div``;
 const Sender = styled.span``;
-const BubblesWrapper = styled.div`
-  /* margin-top: 22px; */
-`;
+const BubblesWrapper = styled.div``;
 const Bubble = styled.div`
   font-size: 18px;
   padding: 12px 24px;
@@ -118,18 +109,16 @@ const GoToOrigin = styled.i`
 interface IReplyProps {
   originText: string;
   originId: string;
-  onClickReply: TOnClickReply;
 }
 export const Reply: React.FC<IReplyProps> = ({
   originId,
   originText,
   children,
-  onClickReply,
 }) => (
   <>
     <ReplyContainer>
       <ReplyBubble>{originText}</ReplyBubble>
-      <GoToOrigin onClick={() => onClickReply(originId)} />
+      <GoToOrigin onClick={() => (window.location.hash = originId)} />
     </ReplyContainer>
     <Bubble>{children}</Bubble>
   </>
@@ -138,18 +127,9 @@ export const Reply: React.FC<IReplyProps> = ({
 const ChatByPerson = ({
   sender,
   chats,
-  onClickReply,
-  isHighlighted,
-}: IProps & React.HTMLAttributes<HTMLDivElement>) => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (isHighlighted)
-      wrapperRef.current?.scrollIntoView({
-        behavior: "smooth",
-      });
-  }, [isHighlighted, chats]);
+}: IChatByPersonProps & React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div ref={wrapperRef}>
+    <div>
       <div>
         <Name>{sender.name}</Name>
       </div>
@@ -166,7 +146,7 @@ const ChatByPerson = ({
               formattedTime: getFormattedTIme(new Date(e.time)),
             }))
             .map((e, index, wholeChats) => (
-              <div key={+e.chatId}>
+              <div key={+e.chatId} id={e.chatId}>
                 {e.attachment?.length ? (
                   e.attachment.map((attachment) => {
                     if (attachment?.type === ChatType.Photo)
@@ -181,7 +161,6 @@ const ChatByPerson = ({
                         <Reply
                           originText={attachment.originMessage}
                           originId={attachment.originChat}
-                          onClickReply={onClickReply}
                         >
                           {e.text}
                         </Reply>

@@ -1,24 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
 import styled from "@emotion/styled";
-import user from "../storage/user";
-import _ from "lodash";
-import ChatByPerson from "./ChatByPerson";
 import { ReactComponent as BellSvg } from "../assets/notifications-24px.svg";
-import { IChat, IUser, IChannel } from "../types/commonType";
+import { IChat, IChannel } from "../types/commonType";
 import { ILocalUser } from "../types/interface";
-import getUserInfo from "../functions/getUserInfoByUserId";
-import { group } from "console";
-import { HorizontalWrapper, Icon } from "../atomics";
-import useConsole from "../hooks/useConsole";
 import ChatInput from "./ChatInput";
 import getGroupedChats from "../functions/getGroupedChats";
+import VirtualizedChatList from "./VirtualizedList";
+import css from "@emotion/css";
 
 interface IProps {
   chats: IChat[];
   channel: IChannel;
 }
 
-type IGroupedChatWithSenderInfo = {
+export type IGroupedChatWithSenderInfo = {
   sender: ILocalUser;
   chats: IChat[];
 }[];
@@ -31,33 +26,11 @@ export default ({
   const [groupedWithSender, setGroupedWithSender] = useState<
     IGroupedChatWithSenderInfo
   >([]);
-  const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
   const scrollArea = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollArea.current)
-      scrollArea.current.scrollTop = scrollArea.current?.scrollHeight;
-    console.log("올라감");
-  }, [chats]);
 
   useEffect(() => {
     getGroupedChats(chats).then((e) => e && setGroupedWithSender(e));
   }, [channelId, chats]);
-
-  useEffect(() => {
-    console.log("event added");
-    const scrollHandler = () =>
-      highlightedIndex !== null && setHighlightedIndex(null);
-    window.addEventListener("scroll", scrollHandler, true);
-    return () => window.removeEventListener("scroll", scrollHandler);
-  }, [highlightedIndex]);
-
-  const replyClickHandler = (originChatId: string) => {
-    const originChatIndexByGrouped = groupedWithSender
-      .map((e) => !!e.chats.find((chat) => chat.chatId === originChatId))
-      .indexOf(true);
-    setHighlightedIndex(originChatIndexByGrouped);
-  };
 
   return (
     <ChatWrapper {...props}>
@@ -68,16 +41,21 @@ export default ({
         </IconWrapper>
       </ChannelHeader>
       {chats.length !== 0 ? (
-        <ChatListWrapper ref={scrollArea}>
-          {groupedWithSender?.map((e, index) => (
-            <ChatByPerson
-              {...e}
-              key={e.chats.map((e) => e.chatId).join("")}
-              onClickReply={replyClickHandler}
-              isHighlighted={highlightedIndex === index}
+        <>
+          <ChatListWrapper ref={scrollArea}>
+            <VirtualizedChatList data={groupedWithSender} />
+            <div
+              id="bottom"
+              css={css`
+                overflow-anchor: auto;
+                height: 1px;
+              `}
             />
-          ))}
-        </ChatListWrapper>
+          </ChatListWrapper>
+          <GotoBottomWrapper>
+            <GotoBottomLink>?</GotoBottomLink>
+          </GotoBottomWrapper>
+        </>
       ) : (
         <FullInfo>이 채널로부터 받은 메시지가 없습니다</FullInfo>
       )}
@@ -108,6 +86,10 @@ const ChatListWrapper = styled.div`
   padding: 20px 20px 12px 20px;
   border-radius: 24px 0px 0px 24px;
   overflow-y: scroll;
+  scroll-behavior: smooth;
+  & * {
+    overflow-anchor: none;
+  }
 `;
 const Bell = styled(BellSvg)`
   width: 18px;
@@ -124,3 +106,20 @@ const FullInfo = styled.div`
   padding-top: 24px;
   flex: 1;
 `;
+
+const GotoBottomWrapper = styled.div`
+  position: fixed;
+  right: 24px;
+  bottom: 90px;
+  background-color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.1);
+`;
+const GotoBottomLink = styled.a``;
+GotoBottomLink.defaultProps = {
+  href: "#bottom",
+};
