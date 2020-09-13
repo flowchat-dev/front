@@ -26,7 +26,6 @@ export default ({
   const [groupedWithSender, setGroupedWithSender] = useState<
     IGroupedChatWithSenderInfo
   >([]);
-  const scrollArea = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getGroupedChats(chats).then((e) => e && setGroupedWithSender(e));
@@ -42,16 +41,7 @@ export default ({
       </ChannelHeader>
       {chats.length !== 0 ? (
         <>
-          <ChatListWrapper ref={scrollArea}>
-            <VirtualizedChatList data={groupedWithSender} />
-            <div
-              id="bottom"
-              css={css`
-                overflow-anchor: auto;
-                height: 1px;
-              `}
-            />
-          </ChatListWrapper>
+          <VirtualizedChatList data={groupedWithSender} />
           <GotoBottomWrapper>
             <GotoBottomLink>?</GotoBottomLink>
           </GotoBottomWrapper>
@@ -79,17 +69,6 @@ const ChatWrapper = styled.div`
   display: flex;
   flex-direction: column;
   background-color: white;
-`;
-const ChatListWrapper = styled.div`
-  background-color: #849e9b;
-  flex: 1;
-  padding: 20px 20px 12px 20px;
-  border-radius: 24px 0px 0px 24px;
-  overflow-y: scroll;
-  scroll-behavior: smooth;
-  & * {
-    overflow-anchor: none;
-  }
 `;
 const Bell = styled(BellSvg)`
   width: 18px;
